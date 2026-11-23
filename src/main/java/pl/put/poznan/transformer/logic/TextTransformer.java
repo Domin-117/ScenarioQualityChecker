@@ -5,7 +5,7 @@ package pl.put.poznan.transformer.logic;
  */
 public class TextTransformer {
 
-    private final String[] transforms;
+    private final String[] transf
 
     public TextTransformer(String[] transforms){
         this.transforms = transforms;
