@@ -1,17 +1,25 @@
+
 package pl.put.poznan.sqc.visitor;
 
 import org.junit.jupiter.api.Test;
 import pl.put.poznan.sqc.model.Scenario;
+import pl.put.poznan.sqc.model.Step;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import pl.put.poznan.sqc.model.Step;
-import java.util.Arrays;
+/**
+ * Klasa sprawdzająca poprawność liczenia kroków scenariusza.
+ */
 
 public class StepCountVisitorTest {
 
+    /**
+     * Sprawdza, czy pusty scenariusz zawiera zero kroków.
+     */
+    
     @Test
     public void emptyScenarioHasZeroSteps() {
 
@@ -29,81 +37,85 @@ public class StepCountVisitorTest {
         assertEquals(0, visitor.getStepCount());
     }
 
+    /**
+     * Sprawdza liczenie kroków w scenariuszu i jego podscenariuszu.
+     */
+    
+    @Test
+    public void nestedScenarioCountsAllSteps() {
 
-@Test
-public void nestedScenarioCountsAllSteps() {
+        Scenario subScenario = new Scenario(
+                "Pod-scenariusz",
+                Collections.emptyList(),
+                "System",
+                Arrays.asList(
+                        new Step("Krok 1 pod-scenariusza",
+                                Collections.emptyList()),
+                        new Step("Krok 2 pod-scenariusza",
+                                Collections.emptyList())
+                )
+        );
 
-    Scenario subScenario = new Scenario(
-            "Pod-scenariusz",
-            Collections.emptyList(),
-            "System",
-            Arrays.asList(
-                    new Step("Krok 1 pod-scenariusza",
-                            Collections.emptyList()),
-                    new Step("Krok 2 pod-scenariusza",
-                            Collections.emptyList())
-            )
-    );
+        Scenario scenario = new Scenario(
+                "Scenariusz główny",
+                Collections.emptyList(),
+                "System",
+                Arrays.asList(
+                        new Step("Krok 1", Collections.emptyList()),
+                        new Step("Krok 2",
+                                Collections.singletonList(subScenario)),
+                        new Step("Krok 3", Collections.emptyList())
+                )
+        );
 
-    Scenario scenario = new Scenario(
-            "Scenariusz główny",
-            Collections.emptyList(),
-            "System",
-            Arrays.asList(
-                    new Step("Krok 1", Collections.emptyList()),
-                    new Step("Krok 2",
-                            Collections.singletonList(subScenario)),
-                    new Step("Krok 3", Collections.emptyList())
-            )
-    );
+        StepCountVisitor visitor = new StepCountVisitor();
 
-    StepCountVisitor visitor = new StepCountVisitor();
+        scenario.accept(visitor);
 
-    scenario.accept(visitor);
+        assertEquals(5, visitor.getStepCount());
+    }
 
-    assertEquals(5, visitor.getStepCount());
-}
+    /**
+     * Sprawdza liczenie kroków przy trzech poziomach zagnieżdżenia.
+     */
+    
+    @Test
+    public void deeplyNestedScenarioCountsAllSteps() {
 
+        Scenario deepest = new Scenario(
+                "Poziom 3",
+                Collections.emptyList(),
+                "System",
+                Collections.singletonList(
+                        new Step("Krok 3.1", Collections.emptyList())
+                )
+        );
 
-@Test
-public void deeplyNestedScenarioCountsAllSteps() {
+        Scenario middle = new Scenario(
+                "Poziom 2",
+                Collections.emptyList(),
+                "System",
+                Collections.singletonList(
+                        new Step("Krok 2.1",
+                                Collections.singletonList(deepest))
+                )
+        );
 
-    Scenario deepest = new Scenario(
-            "Poziom 3",
-            Collections.emptyList(),
-            "System",
-            Collections.singletonList(
-                    new Step("Krok 3.1", Collections.emptyList())
-            )
-    );
+        Scenario main = new Scenario(
+                "Poziom 1",
+                Collections.emptyList(),
+                "System",
+                Arrays.asList(
+                        new Step("Krok 1.1", Collections.emptyList()),
+                        new Step("Krok 1.2",
+                                Collections.singletonList(middle))
+                )
+        );
 
-    Scenario middle = new Scenario(
-            "Poziom 2",
-            Collections.emptyList(),
-            "System",
-            Collections.singletonList(
-                    new Step("Krok 2.1",
-                            Collections.singletonList(deepest))
-            )
-    );
+        StepCountVisitor visitor = new StepCountVisitor();
 
-    Scenario main = new Scenario(
-            "Poziom 1",
-            Collections.emptyList(),
-            "System",
-            Arrays.asList(
-                    new Step("Krok 1.1", Collections.emptyList()),
-                    new Step("Krok 1.2",
-                            Collections.singletonList(middle))
-            )
-    );
+        main.accept(visitor);
 
-    StepCountVisitor visitor = new StepCountVisitor();
-
-    main.accept(visitor);
-
-    assertEquals(4, visitor.getStepCount());
-}
-
-
+        assertEquals(4, visitor.getStepCount());
+    }
 }
