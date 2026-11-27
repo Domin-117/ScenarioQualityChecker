@@ -1,5 +1,6 @@
 package pl.put.poznan.sqc.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import pl.put.poznan.sqc.visitor.ScenarioVisitor;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 /**
  * Reprezentuje pojedynczy krok scenariusza oraz ewentualne zagnieżdżone pod-scenariusze.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Step {
     private String text;
     private List<Scenario> subScenarios = new ArrayList<>();
