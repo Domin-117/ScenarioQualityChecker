@@ -84,4 +84,15 @@ class ScenarioControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists());
     }
+
+    @Test
+    void shouldReturnBadRequestWhenStepTextIsEmpty() throws Exception {
+        String invalidJson = "{\"title\": \"Test\", \"steps\": [{\"text\": \"   \"}]}";
+
+        mockMvc.perform(post("/api/scenarios/validate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").exists());
+    }
 }

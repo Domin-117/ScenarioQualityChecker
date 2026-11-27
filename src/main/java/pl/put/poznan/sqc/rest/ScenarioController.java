@@ -114,7 +114,29 @@ public class ScenarioController {
         if (scenario.getSteps() == null || scenario.getSteps().isEmpty()) {
             return buildBadRequest("Scenariusz musi zawierać co najmniej jeden krok w polu 'steps'");
         }
+        if (hasEmptyStepText(scenario)) {
+            return buildBadRequest("Każdy krok w scenariuszu musi zawierać niepuste pole 'text'");
+        }
         return null;
+    }
+
+    private boolean hasEmptyStepText(Scenario scenario) {
+        if (scenario.getSteps() == null) {
+            return false;
+        }
+        for (Step step : scenario.getSteps()) {
+            if (step == null || step.getText() == null || step.getText().trim().isEmpty()) {
+                return true;
+            }
+            if (step.getSubScenarios() != null) {
+                for (Scenario subScenario : step.getSubScenarios()) {
+                    if (hasEmptyStepText(subScenario)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private ResponseEntity<Object> buildBadRequest(String message) {
