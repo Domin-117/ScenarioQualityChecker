@@ -3,10 +3,6 @@ package pl.put.poznan.sqc.visitor;
 import pl.put.poznan.sqc.model.Scenario;
 import pl.put.poznan.sqc.model.Step;
 
-/**
- * Zlicza wszystkie kroki scenariusza,
- * również w zagnieżdżonych pod-scenariuszach.
- */
 public class StepCountVisitor implements ScenarioVisitor {
 
     private int stepCount = 0;
