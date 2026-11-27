@@ -1,5 +1,7 @@
 package pl.put.poznan.sqc.model;
 
+import pl.put.poznan.sqc.visitor.ScenarioVisitor;
+
 import java.util.ArrayList;
 import java.util.List;
 
